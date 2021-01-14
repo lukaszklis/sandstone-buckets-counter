@@ -1,13 +1,13 @@
-package com.example;
+package net.klisiu.sandstonebucketscounter;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class ExamplePluginTest
+public class SandstoneBucketsCounterPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{
-		ExternalPluginManager.loadBuiltin(ExamplePlugin.class);
+		ExternalPluginManager.loadBuiltin(SandstoneBucketsCounterPlugin.class);
 		RuneLite.main(args);
 	}
 }

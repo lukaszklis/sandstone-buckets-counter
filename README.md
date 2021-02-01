@@ -13,4 +13,4 @@ Found a bug? Have a suggestion?
 Please use one of the following channels to let us know:
 
 - [open a new ticket on GitHub](https://github.com/klisiu-net/sandstone-buckets-counter/issues/new)
-- [let us know on our Discord](https://discord.gg/9DE3FwjVF3)
+- [let us know on our Discord](https://discord.gg/vuq4r4yUWr)

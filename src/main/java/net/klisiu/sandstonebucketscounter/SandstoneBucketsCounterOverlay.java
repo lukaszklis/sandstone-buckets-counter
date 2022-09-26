@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 
-import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -16,9 +15,6 @@ class SandstoneBucketsCounterOverlay extends OverlayPanel
 {
 	private final SandstoneBucketsCounterPlugin plugin;
 	private final SandstoneBucketsCounterConfig sandstoneBucketsCounterConfig;
-
-	private static final Font BOLD_FONT = FontManager.getRunescapeBoldFont();
-	private static final Font NORMAL_FONT = FontManager.getRunescapeFont();
 
 	@Inject
 	private SandstoneBucketsCounterOverlay(SandstoneBucketsCounterPlugin plugin, SandstoneBucketsCounterConfig sandstoneBucketsCounterConfig)
@@ -38,13 +34,10 @@ class SandstoneBucketsCounterOverlay extends OverlayPanel
 			return null;
 		}
 
-		graphics.setFont(BOLD_FONT);
 		panelComponent.getChildren().add(TitleComponent.builder()
 			.text("Buckets of sand")
 			.color(Color.ORANGE)
 			.build());
-
-		graphics.setFont(NORMAL_FONT);
 
 		int inventoryCount = plugin.getInventoryCount() > 0 ? plugin.getInventoryCount() : 0;
 		panelComponent.getChildren().add(LineComponent.builder()

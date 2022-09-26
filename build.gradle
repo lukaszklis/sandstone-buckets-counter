@@ -22,8 +22,8 @@ dependencies {
 	testImplementation group: 'net.runelite', name:'client', version: runeLiteVersion
 }
 
-group = 'net.klisiu.sandstonebucketscounter'
 version = '1.0'
+group = 'com.wookkeey.sandstonebucketscounter'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {

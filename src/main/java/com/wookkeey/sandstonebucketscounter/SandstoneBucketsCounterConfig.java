@@ -1,4 +1,4 @@
-package net.klisiu.sandstonebucketscounter;
+package com.wookkeey.sandstonebucketscounter;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;

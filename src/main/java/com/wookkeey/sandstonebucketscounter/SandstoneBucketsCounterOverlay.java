@@ -1,4 +1,4 @@
-package net.klisiu.sandstonebucketscounter;
+package com.wookkeey.sandstonebucketscounter;
 
 import java.awt.*;
 import javax.inject.Inject;

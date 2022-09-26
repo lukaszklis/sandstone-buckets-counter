@@ -1,11 +1,10 @@
 package net.klisiu.sandstonebucketscounter;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+import java.awt.*;
 import javax.inject.Inject;
 import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
+
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -36,19 +35,21 @@ class SandstoneBucketsCounterOverlay extends OverlayPanel
 		}
 
 		panelComponent.getChildren().add(TitleComponent.builder()
-			.text("Sandstones mining")
+			.text("Buckets of sand")
 			.color(Color.ORANGE)
 			.build());
 
 		int inventoryCount = plugin.getInventoryCount() > 0 ? plugin.getInventoryCount() : 0;
 		panelComponent.getChildren().add(LineComponent.builder()
-			.left("Buckets of sand:")
+			.left("Inventory:")
 			.right(Integer.toString(inventoryCount))
 			.build());
 
+		int grinderCount = plugin.getGrinderCount() > 0 ? plugin.getGrinderCount() : 0;
 		panelComponent.getChildren().add(LineComponent.builder()
-			.left("(inventory)")
-			.build());
+				.left("Grinder:")
+				.right(Integer.toString(grinderCount))
+				.build());
 
 
 		return super.render(graphics);

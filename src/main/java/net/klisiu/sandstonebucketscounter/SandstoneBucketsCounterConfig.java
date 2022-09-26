@@ -4,9 +4,11 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("sandstonebucketscounter")
+@ConfigGroup(SandstoneBucketsCounterConfig.CONFIG_GROUP_NAME)
 public interface SandstoneBucketsCounterConfig extends Config
 {
+	String CONFIG_GROUP_NAME = "sandstonebucketscounter";
+
 	@ConfigItem(
 		keyName = "showOverlay",
 		name = "Show Overlay",

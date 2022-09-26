@@ -41,6 +41,8 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 
 	private static final Pattern GRINDER_CHECK_BUCKET_PATTERN = Pattern.compile("I have (?<emptyBucketCount>[\\d,]+) of your buckets and you've ground enough sandstone for (?<filledBucketCount>[\\d,]+) buckets of sand.");
 
+	private static final String CONFIG_GRINDER_STORAGE_KEY = "numStoredInGrinder";
+
 	@Inject
 	private Client client;
 
@@ -51,12 +53,14 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	@Inject
+	private ConfigManager configManager;
+
+	@Inject
 	private SandstoneBucketsCounterOverlay overlay;
 
 	@Getter(AccessLevel.PACKAGE)
 	private int inventoryCount;
 
-	@Getter(AccessLevel.PACKAGE)
 	private int grinderCount;
 
 	@Getter(AccessLevel.PACKAGE)
@@ -120,7 +124,7 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 
 		String npcText = Text.sanitizeMultilineText(npcDialog.getText());
 		Matcher textMatcher = GRINDER_DEPOSIT_BUCKET_PATTERN.matcher(npcText);
-		log.debug(npcText);
+
 		if (!textMatcher.find()) {
 			textMatcher = GRINDER_CHECK_BUCKET_PATTERN.matcher(npcText);
 			if (!textMatcher.find()) {
@@ -129,7 +133,12 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 		}
 
 		grinderCount = Integer.parseInt(textMatcher.group("filledBucketCount").replace(",", ""));
+		configManager.setRSProfileConfiguration(SandstoneBucketsCounterConfig.CONFIG_GROUP_NAME, CONFIG_GRINDER_STORAGE_KEY, grinderCount);
+	}
 
+	public int getGrinderCount() {
+		Integer configGrinderCount = configManager.getRSProfileConfiguration(SandstoneBucketsCounterConfig.CONFIG_GROUP_NAME, CONFIG_GRINDER_STORAGE_KEY, int.class);
+		return configGrinderCount != null ? configGrinderCount : grinderCount;
 	}
 
 	@Subscribe

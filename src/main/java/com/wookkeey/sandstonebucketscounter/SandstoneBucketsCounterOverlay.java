@@ -40,17 +40,17 @@ class SandstoneBucketsCounterOverlay extends OverlayPanel
 			.color(Color.ORANGE)
 			.build());
 
-		int inventoryCount = plugin.getInventoryCount() > 0 ? plugin.getInventoryCount() : 0;
+		int inventoryCount = Math.max(plugin.getInventoryCount(), 0);
 		panelComponent.getChildren().add(LineComponent.builder()
 			.left("Inventory:")
 			.right(Integer.toString(inventoryCount))
 			.build());
 
-		int grinderCount = plugin.getGrinderCount() > 0 ? plugin.getGrinderCount() : 0;
+		int grinderCount = Math.max(plugin.getGrinderCount(), 0);
 		panelComponent.getChildren().add(LineComponent.builder()
-				.left("Grinder:")
-				.right(Integer.toString(grinderCount))
-				.build());
+			.left("Grinder:")
+			.right(Integer.toString(grinderCount))
+			.build());
 
 
 		return super.render(graphics);

@@ -1,16 +1,24 @@
 package com.wookkeey.sandstonebucketscounter;
 
 import com.google.inject.Provides;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
-
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import static net.runelite.api.ItemID.SANDSTONE_10KG;
 import static net.runelite.api.ItemID.SANDSTONE_1KG;
 import static net.runelite.api.ItemID.SANDSTONE_2KG;
 import static net.runelite.api.ItemID.SANDSTONE_5KG;
+import net.runelite.api.MessageNode;
+import net.runelite.api.NpcID;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.widgets.Widget;
@@ -24,14 +32,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-@PluginDescriptor(
-	name = "Sandstone Buckets Counter",
-	description = "Show helpful counter of how many buckets of sand in sandstones player has in their inventory.",
-	tags = {"sandstone", "desert quarry", "quarry", "bucket of sand"}
-)
+@PluginDescriptor(name = "Sandstone Buckets Counter", description = "Show helpful counter of how many buckets of sand in sandstones player has in their inventory.", tags = {"sandstone", "desert quarry", "quarry", "bucket of sand"})
 @Slf4j
 public class SandstoneBucketsCounterPlugin extends Plugin
 {

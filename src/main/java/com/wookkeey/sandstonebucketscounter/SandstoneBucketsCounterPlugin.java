@@ -32,7 +32,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 
-@PluginDescriptor(name = "Sandstone Buckets Counter", description = "Show helpful counter of how many buckets of sand in sandstones player has in their inventory.", tags = {"sandstone", "desert quarry", "quarry", "bucket of sand"})
+@PluginDescriptor(name = "Sandstone Buckets Counter", description = "Show how many buckets of sand in sandstones player has in their inventory/grinder.", tags = {"sandstone", "desert quarry", "quarry", "bucket of sand"})
 @Slf4j
 public class SandstoneBucketsCounterPlugin extends Plugin
 {

@@ -21,8 +21,8 @@ import net.runelite.api.NpcID;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetModelType;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -38,9 +38,11 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 {
 	private static final int DESERT_QUARRY_REGION = 12589;
 
-	private static final Pattern GRINDER_DEPOSIT_BUCKET_PATTERN = Pattern.compile("The grinder is now holding enough sandstone equivalent to (?<filledBucketCount>[\\d,]+) buckets of sand.");
+	private static final Pattern GRINDER_NPC_DEPOSIT_BUCKET_PATTERN = Pattern.compile("The grinder is now holding enough sandstone equivalent to (?<filledBucketCount>\\d+) buckets of sand.");
 
-	private static final Pattern GRINDER_CHECK_BUCKET_PATTERN = Pattern.compile("I have (?<emptyBucketCount>[\\d,]+) of your buckets and you've ground enough sandstone for (?<filledBucketCount>[\\d,]+) buckets of sand.");
+	private static final Pattern GRINDER_DEPOSIT_PATTERN = Pattern.compile("The grinder is holding enough sandstone for (?<filledBucketCount>\\d+) buckets of sand.");
+
+	private static final Pattern GRINDER_NPC_CHECK_BUCKET_PATTERN = Pattern.compile("I have (?<emptyBucketCount>\\d+) of your buckets and you've ground enough sandstone for (?<filledBucketCount>\\d+) buckets of sand.");
 
 	private static final String CONFIG_GRINDER_STORAGE_KEY = "numStoredInGrinder";
 
@@ -72,8 +74,7 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 	{
 		reset();
 		overlayManager.add(overlay);
-		clientThread.invokeLater(() ->
-		{
+		clientThread.invokeLater(() -> {
 			final ItemContainer container = client.getItemContainer(InventoryID.INVENTORY);
 
 			if (container != null)
@@ -105,39 +106,8 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 		return false;
 	}
 
-	private void getGrinderChatbox()
+	public int getGrinderCount()
 	{
-		Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
-		if (npcDialog == null) {
-			return;
-		}
-
-		Widget name = client.getWidget(WidgetInfo.DIALOG_NPC_NAME);
-		Widget head = client.getWidget(WidgetInfo.DIALOG_NPC_HEAD_MODEL);
-		if (name == null || head == null || head.getModelType() != WidgetModelType.NPC_CHATHEAD) {
-			return;
-		}
-
-		final int npcId = head.getModelId();
-		if (npcId != NpcID.DREW) {
-			return;
-		}
-
-		String npcText = Text.sanitizeMultilineText(npcDialog.getText());
-		Matcher textMatcher = GRINDER_DEPOSIT_BUCKET_PATTERN.matcher(npcText);
-
-		if (!textMatcher.find()) {
-			textMatcher = GRINDER_CHECK_BUCKET_PATTERN.matcher(npcText);
-			if (!textMatcher.find()) {
-				return;
-			}
-		}
-
-		grinderCount = Integer.parseInt(textMatcher.group("filledBucketCount").replace(",", ""));
-		configManager.setRSProfileConfiguration(SandstoneBucketsCounterConfig.CONFIG_GROUP_NAME, CONFIG_GRINDER_STORAGE_KEY, grinderCount);
-	}
-
-	public int getGrinderCount() {
 		Integer configGrinderCount = configManager.getRSProfileConfiguration(SandstoneBucketsCounterConfig.CONFIG_GROUP_NAME, CONFIG_GRINDER_STORAGE_KEY, int.class);
 		return configGrinderCount != null ? configGrinderCount : grinderCount;
 	}
@@ -166,10 +136,33 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 
 		isInDesertQuarry = true;
 
-		getGrinderChatbox();
+		checkChatBox();
 	}
 
+	@Subscribe
+	public void onChatMessage(ChatMessage chatMessage)
+	{
+		if (!isInDesertQuarry)
+		{
+			return;
+		}
 
+		ChatMessageType chatMessageType = chatMessage.getType();
+		if (chatMessageType != ChatMessageType.GAMEMESSAGE && chatMessageType != ChatMessageType.SPAM)
+		{
+			return;
+		}
+
+		MessageNode messageNode = chatMessage.getMessageNode();
+		String normalizedMessageValue = messageNode.getValue().replace("one bucket", "1 buckets");
+		Matcher textMatcher = GRINDER_DEPOSIT_PATTERN.matcher(normalizedMessageValue);
+		if (!textMatcher.find())
+		{
+			return;
+		}
+
+		updateGrinderCount(textMatcher.group("filledBucketCount"));
+	}
 
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
@@ -190,6 +183,41 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 		return configManager.getConfig(SandstoneBucketsCounterConfig.class);
 	}
 
+	private void checkChatBox()
+	{
+		Widget npcDialog = client.getWidget(ComponentID.DIALOG_NPC_TEXT);
+		if (npcDialog == null)
+		{
+			return;
+		}
+
+		Widget name = client.getWidget(ComponentID.DIALOG_NPC_NAME);
+		Widget head = client.getWidget(ComponentID.DIALOG_NPC_HEAD_MODEL);
+		if (name == null || head == null || head.getModelType() != WidgetModelType.NPC_CHATHEAD)
+		{
+			return;
+		}
+
+		final int npcId = head.getModelId();
+		if (npcId != NpcID.DREW)
+		{
+			return;
+		}
+
+		String npcText = Text.sanitizeMultilineText(npcDialog.getText());
+		Matcher textMatcher = GRINDER_NPC_DEPOSIT_BUCKET_PATTERN.matcher(npcText);
+		if (!textMatcher.find())
+		{
+			textMatcher = GRINDER_NPC_CHECK_BUCKET_PATTERN.matcher(npcText);
+			if (!textMatcher.find())
+			{
+				return;
+			}
+
+			updateGrinderCount(textMatcher.group("filledBucketCount"));
+		}
+	}
+
 	private void calculateInventory(Item[] inv)
 	{
 		inventoryCount = 0;
@@ -198,6 +226,12 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 		{
 			inventoryCount += getBucketsPotentialCount(item.getId());
 		}
+	}
+
+	private void updateGrinderCount(String candidate)
+	{
+		grinderCount = Integer.parseInt(candidate);
+		configManager.setRSProfileConfiguration(SandstoneBucketsCounterConfig.CONFIG_GROUP_NAME, CONFIG_GRINDER_STORAGE_KEY, grinderCount);
 	}
 
 	private static int getBucketsPotentialCount(int id)

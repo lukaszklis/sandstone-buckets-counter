@@ -213,9 +213,9 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 			{
 				return;
 			}
-
-			updateGrinderCount(textMatcher.group("filledBucketCount"));
 		}
+
+		updateGrinderCount(textMatcher.group("filledBucketCount"));
 	}
 
 	private void calculateInventory(Item[] inv)

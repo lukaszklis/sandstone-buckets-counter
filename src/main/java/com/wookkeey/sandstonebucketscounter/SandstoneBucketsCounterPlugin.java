@@ -38,11 +38,11 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 {
 	private static final int DESERT_QUARRY_REGION = 12589;
 
-	private static final Pattern GRINDER_NPC_DEPOSIT_BUCKET_PATTERN = Pattern.compile("The grinder is now holding enough sandstone equivalent to (?<filledBucketCount>\\d+) buckets of sand.");
+	private static final Pattern GRINDER_NPC_DEPOSIT_BUCKET_PATTERN = Pattern.compile("The grinder is now holding enough sandstone equivalent to (?<filledBucketCount>[\\d,]+) buckets of sand.");
 
-	private static final Pattern GRINDER_DEPOSIT_PATTERN = Pattern.compile("The grinder is holding enough sandstone for (?<filledBucketCount>\\d+) buckets of sand.");
+	private static final Pattern GRINDER_DEPOSIT_PATTERN = Pattern.compile("The grinder is holding enough sandstone for (?<filledBucketCount>[\\d,]+) buckets of sand.");
 
-	private static final Pattern GRINDER_NPC_CHECK_BUCKET_PATTERN = Pattern.compile("I have (?<emptyBucketCount>\\d+) of your buckets and you've ground enough sandstone for (?<filledBucketCount>\\d+) buckets of sand.");
+	private static final Pattern GRINDER_NPC_CHECK_BUCKET_PATTERN = Pattern.compile("I have (?<emptyBucketCount>[\\d,]+) of your buckets and you've ground enough sandstone for (?<filledBucketCount>[\\d,]+) buckets of sand.");
 
 	private static final String CONFIG_GRINDER_STORAGE_KEY = "numStoredInGrinder";
 
@@ -230,7 +230,7 @@ public class SandstoneBucketsCounterPlugin extends Plugin
 
 	private void updateGrinderCount(String candidate)
 	{
-		grinderCount = Integer.parseInt(candidate);
+		grinderCount = Integer.parseInt(candidate.replace(",", ""));
 		configManager.setRSProfileConfiguration(SandstoneBucketsCounterConfig.CONFIG_GROUP_NAME, CONFIG_GRINDER_STORAGE_KEY, grinderCount);
 	}
 
